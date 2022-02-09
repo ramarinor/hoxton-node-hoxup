@@ -1,32 +1,32 @@
-import { useEffect, useState } from 'react'
-import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from "react";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 
-import Login from './pages/Login'
-import Main from './pages/Main'
-import NotFound from './pages/NotFound'
+import Login from "./pages/Login";
+import Main from "./pages/Main";
+import NotFound from "./pages/NotFound";
 
 export default function App() {
-  const [currentUser, setCurrentUser] = useState(null)
-  const [modal, setModal] = useState('')
-  const [users, setUsers] = useState([])
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [modal, setModal] = useState("");
+  const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
-    fetch('http://localhost:4000/users')
-      .then(resp => resp.json())
-      .then(users => setUsers(users))
-  }, [])
+    fetch("http://localhost:4000/users")
+      .then((resp) => resp.json())
+      .then((users) => setUsers(users));
+  }, []);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  function logIn(user) {
+  function logIn(user: User) {
     // set user in state as the current user
-    setCurrentUser(user)
+    setCurrentUser(user);
     // navigate to the main page
-    navigate('/logged-in')
+    navigate("/logged-in");
   }
 
   function logOut() {
-    setCurrentUser(null)
+    setCurrentUser(null);
   }
 
   return (
@@ -64,5 +64,5 @@ export default function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
-  )
+  );
 }

@@ -1,9 +1,14 @@
-function Message ({ message, outgoing }) {
+type Props = {
+  message: Message;
+  outgoing: boolean;
+};
+
+function Message({ message, outgoing }: Props) {
   return (
-    <li className={outgoing ? 'outgoing' : 'incoming'}>
+    <li className={outgoing ? "outgoing" : "incoming"}>
       <p>{message.messageText}</p>
     </li>
-  )
+  );
 }
 
-export default Message
+export default Message;

@@ -1,16 +1,21 @@
-function UserLoginItem ({ user, logIn }) {
+type Props = {
+  user: User;
+  logIn: (value: User) => void;
+};
+
+function UserLoginItem({ user, logIn }: Props   ) {
   return (
     <li>
       <button
-        className='user-selection'
+        className="user-selection"
         onClick={() => {
-          logIn(user)
+          logIn(user);
         }}
       >
         <img
-          className='avatar'
-          width='50'
-          height='50'
+          className="avatar"
+          width="50"
+          height="50"
           src={user.avatar}
           alt={`${user.firstName} ${user.lastName}`}
         />
@@ -19,7 +24,7 @@ function UserLoginItem ({ user, logIn }) {
         </h3>
       </button>
     </li>
-  )
+  );
 }
 
-export default UserLoginItem
+export default UserLoginItem;

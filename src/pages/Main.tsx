@@ -1,61 +1,68 @@
-import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import Conversation from '../components/Conversation'
-
-function Main({ currentUser, logOut, users, setModal, modal }) {
-  const [conversations, setConversations] = useState([])
-  const params = useParams()
-  const navigate = useNavigate()
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import Conversation from "../components/Conversation";
+type Props = {
+  currentUser: User | null;
+  logOut: () => void;
+  users: User[];
+  setModal: React.Dispatch<React.SetStateAction<string>>;
+  modal: string;
+};
+function Main({ currentUser, logOut, users, setModal, modal }: Props) {
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const params = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (currentUser === null) navigate('/')
-  }, [currentUser, navigate])
+    if (currentUser === null) navigate("/");
+  }, [currentUser, navigate]);
 
   useEffect(() => {
-    if (currentUser === null) return
+    if (currentUser === null) return;
 
     fetch(`http://localhost:4000/conversations?userId=${currentUser.id}`)
-      .then(resp => resp.json())
-      .then(conversations => setConversations(conversations))
-  }, [currentUser])
+      .then((resp) => resp.json())
+      .then((conversations) => setConversations(conversations));
+  }, [currentUser]);
 
-  const usersIHaveNotTalkedToYet = users.filter(user => {
+  const usersIHaveNotTalkedToYet = users.filter((user) => {
     // when do I want to keep this user?
 
     // don't show the currently logged in user
-    if (currentUser && user.id === currentUser.id) return false
+    if (currentUser && user.id === currentUser.id) return false;
 
     // don't show any users in conversations
     // Is this user's id in the conversations?
     // Is it either in userId or participantId
     for (const conversation of conversations) {
-      if (conversation.userId === user.id) return false
-      if (conversation.participantId === user.id) return false
+      if (conversation.userId === user.id) return false;
+      if (conversation.participantId === user.id) return false;
     }
     // at this point we know this user's id is not anywhere in the conversations
     // so we want to keep it
-    return true
-  })
+    return true;
+  });
 
-  function createConversation(participantId) {
-    fetch('http://localhost:4000/conversations', {
-      method: 'POST',
+  function createConversation(participantId: number) {
+    if (currentUser === null) return;
+    fetch("http://localhost:4000/conversations", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         userId: currentUser.id,
         participantId: participantId
       })
     })
-      .then(resp => resp.json())
-      .then(newConversation => {
-        setConversations([...conversations, newConversation])
-        setModal('')
-      })
+      .then((resp) => resp.json())
+      .then((newConversation) => {
+        setConversations([...conversations, newConversation]);
+        setModal("");
+      });
   }
 
-  if (currentUser === null) return <h1>Not signed in...</h1>
+  if (currentUser === null) return <h1>Not signed in...</h1>;
 
   return (
     <div className="main-wrapper">
@@ -88,7 +95,7 @@ function Main({ currentUser, logOut, users, setModal, modal }) {
               className="chat-button"
               onClick={() => {
                 // display a "start-chat" modal ✅
-                setModal('start-chat')
+                setModal("start-chat");
               }}
             >
               <div>
@@ -97,16 +104,16 @@ function Main({ currentUser, logOut, users, setModal, modal }) {
             </button>
           </li>
 
-          {conversations.map(conversation => {
+          {conversations.map((conversation) => {
             // which id am I talking to
             const talkingToId =
               currentUser.id === conversation.userId
                 ? conversation.participantId
-                : conversation.userId
+                : conversation.userId;
 
             // what are their details?
-            const talkingToUser = users.find(user => user.id === talkingToId)
-
+            const talkingToUser = users.find((user) => user.id === talkingToId);
+            if (talkingToUser === undefined) return null;
             return (
               <li key={conversation.id}>
                 <button
@@ -128,7 +135,7 @@ function Main({ currentUser, logOut, users, setModal, modal }) {
                   </div>
                 </button>
               </li>
-            )
+            );
           })}
         </ul>
       </aside>
@@ -139,10 +146,10 @@ function Main({ currentUser, logOut, users, setModal, modal }) {
         <Conversation currentUser={currentUser} />
       ) : null}
 
-      {modal === 'start-chat' ? (
+      {modal === "start-chat" ? (
         <div className="modal-wrapper">
           <div className="modal">
-            <button className="close-modal" onClick={() => setModal('')}>
+            <button className="close-modal" onClick={() => setModal("")}>
               X
             </button>
             <h1>Start chat</h1>
@@ -152,7 +159,7 @@ function Main({ currentUser, logOut, users, setModal, modal }) {
             */}
             {usersIHaveNotTalkedToYet.length > 0 ? (
               <ul>
-                {usersIHaveNotTalkedToYet.map(user => (
+                {usersIHaveNotTalkedToYet.map((user) => (
                   <li key={user.id}>
                     <button
                       className="chat-button"
@@ -162,7 +169,7 @@ function Main({ currentUser, logOut, users, setModal, modal }) {
                         // how do we start a conversation?
                         // - create a conversation on the server
                         // - update conversations state
-                        createConversation(user.id)
+                        createConversation(user.id);
                       }}
                     >
                       <img
@@ -188,7 +195,7 @@ function Main({ currentUser, logOut, users, setModal, modal }) {
         </div>
       ) : null}
     </div>
-  )
+  );
 }
 
-export default Main
+export default Main;
